@@ -1,0 +1,57 @@
+#!/bin/bash
+
+compile(){
+    echo "Compiling..."
+    make -C ./src
+    make -C ./tester
+}
+
+tester(){
+    #compile
+    files=$(find ./testcases -type f | sort)
+    total=0
+    for file in $files; do
+        printf "%-4s %-20s: " $1 $file
+        init=$(date +%s%3N)
+        result=$(./src/prog.out $1 $file $2 $3)
+        let end=$(date +%s%3N)-$init
+        let ms=$end%1000
+        let sec=$end/1000
+        let min=$sec/60
+        let sec=$sec%60
+        let total=$total+$end
+        echo $result | ./tester/tester.out $file
+        printf "(%'dm %'ds %'dms)\n" $min $sec $ms
+    done
+    let ms=$total%1000
+    let sec=$total/1000
+    let min=$sec/60
+    let sec=$sec%60
+    printf "(%'dm %'ds %'dms)\n" $min $sec $ms
+}
+
+algs=(nn mst ag) 
+
+case $1 in
+"")
+    for alg in ${algs[@]}; do
+        tester $alg
+    done
+    ;;
+
+nn)
+    tester ${algs[0]}
+    ;;
+
+mst)
+    tester ${algs[1]}
+    ;;
+
+ag)
+    tester ${algs[2]} $2 $3
+    ;;
+
+build)
+    compile
+
+esac
