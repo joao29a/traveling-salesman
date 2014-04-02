@@ -6,7 +6,7 @@
 #include <iostream>
 
 #define KEY int
-#define VALUE float
+#define VALUE int
 
 #define HEURISTIC vector<KEY>*(*)\
     (Graph<KEY, VALUE>*, Vertex<KEY, VALUE>*)
@@ -35,11 +35,11 @@ int main(int argc, char** argv){
         print_path(graph, algs[argv[1]](graph, graph->get_first()));
     else{
         stringstream s;
-        s << string(argv[3]) << " " << string(argv[4]);
-        size_t pop_size;
+        s << string(argv[3]) << " " << string(argv[4]) << " " << string(argv[5]);
+        size_t pop_size, max_time;
         double mutation_rate;
-        s >> pop_size >> mutation_rate;
-        print_path(graph, genetic_tsp(graph, pop_size, mutation_rate));
+        s >> pop_size >> mutation_rate >> max_time;
+        print_path(graph, genetic_tsp(graph, pop_size, mutation_rate, max_time));
     }
     return 0;
 }

@@ -9,7 +9,7 @@ template<typename T, typename C>
 using pair_t = pair<vector<T>*, C>;
 
 template<typename T, typename C>
-using vector_list = deque<pair_t<T,C>*>;
+using deque_pair = deque<pair_t<T,C>*>;
 
 template<typename T, typename C>
 C get_cost(Graph<T,C>* graph, vector<T>* path){
@@ -20,18 +20,23 @@ C get_cost(Graph<T,C>* graph, vector<T>* path){
     return cost;
 }
 
-/* This is faster than the erase function from vector */
-template<typename T>
-void remove(vector<T>& vt, int pos){
-    T tmp = vt[pos];
-    vt[pos] = vt.back();
-    vt[vt.size() - 1] = tmp;
+/* This is faster than the erase function from vector/deque */
+template<typename T, typename D>
+void swap(D& vt, int pos1, int pos2){
+    T tmp = vt[pos1];
+    vt[pos1] = vt[pos2];
+    vt[pos2] = tmp;
+}
+
+template<typename T, typename D>
+void remove(D& vt, int pos){
+    swap<T, D>(vt, pos, vt.size() - 1);
     vt.pop_back();
 }
 
 template<typename T, typename C>
-vector_list<T,C>* generate_population(Graph<T,C>* graph, size_t population_size){
-    vector_list<T,C>* population = new vector_list<T,C>();
+deque_pair<T,C>* generate_population(Graph<T,C>* graph, size_t population_size){
+    deque_pair<T,C>* population = new deque_pair<T,C>();
     vector<T> vertices;
     for (auto& vertex: graph->get_vertices()){
         vertices.push_back(vertex.first);
@@ -42,7 +47,7 @@ vector_list<T,C>* generate_population(Graph<T,C>* graph, size_t population_size)
         while (!vertices_left.empty()){
             int pos = rand() % vertices_left.size();
             individual->push_back(vertices_left[pos]);
-            remove<T>(vertices_left, pos);
+            remove<T, vector<T>>(vertices_left, pos);
         }
         individual->push_back(*individual->begin());
         pair_t<T,C>* individual_cost = new pair_t<T,C>();
@@ -60,7 +65,7 @@ struct Compare{
 };
 
 template<typename T, typename C>
-bool is_population_improving(vector_list<T,C>* population){
+bool is_population_improving(deque_pair<T,C>* population){
     for (int i = 1; i < population->size(); i++){
         if (population->front()->second != population->at(i)->second)
             return true;
@@ -90,26 +95,37 @@ pair_t<T,C>* crossover(Graph<T,C>* graph, pair_t<T,C>* parent1,
 }
 
 template<typename T, typename C>
-void update_population(vector_list<T,C>* population, pair_t<T,C>* individual){
-    for (int i = 0; i < 2; i++){
-        delete population->front()->first;
-        delete population->front();
-        population->pop_front();
+void mutation(pair_t<T,C>* individual, double mutation_rate){
+    if (((double) rand() / RAND_MAX) < mutation_rate){
+        int pos1 = (rand() % (individual->first->size() - 2)) + 1;
+        int pos2 = pos1;
+        while (pos2 == pos1)
+            pos2 = (rand() % (individual->first->size() - 2)) + 1;
+        swap<T, vector<T>>(*individual->first, pos1, pos2);
     }
+}
+
+template<typename T, typename C>
+void update_population(deque_pair<T,C>* population, pair_t<T,C>* individual){
+    delete population->front()->first;
+    delete population->front();
+    population->pop_front();
     population->push_back(individual);
 }
 
 template<typename T, typename C>
 vector<T>* genetic_tsp(Graph<T,C>* graph, size_t population_size, 
-        double mutation_rate){
+        double mutation_rate, size_t max_time){
     srand(time(NULL));
-    vector_list<T,C>* population = generate_population(graph, population_size);
+    deque_pair<T,C>* population = generate_population(graph, population_size);
     sort(population->begin(), population->end(), Compare<T,C>());
-    while (is_population_improving(population)){
+    size_t init_time = time(NULL);
+    while (is_population_improving(population) && (time(NULL) - init_time) < max_time){
         pair_t<T,C>* individual = crossover(graph, population->at(0), population->at(1));
+        mutation(individual, mutation_rate);
         update_population(population, individual);
     }
-    //TODO sex, mutation, population update
+    sort(population->begin(), population->end(), Compare<T,C>());
     return population->front()->first;
 }
 

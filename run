@@ -13,7 +13,7 @@ tester(){
     for file in $files; do
         printf "%-4s %-20s: " $1 $file
         init=$(date +%s%3N)
-        result=$(./src/prog.out $1 $file $2 $3)
+        result=$(./src/prog.out $1 $file $2 $3 $4)
         let end=$(date +%s%3N)-$init
         let ms=$end%1000
         let sec=$end/1000
@@ -33,9 +33,9 @@ tester(){
 algs=(nn mst ga) 
 
 case $1 in
-"")
+"" | "all")
     for alg in ${algs[@]}; do
-        tester $alg
+        tester $alg $2 $3 $4
     done
     ;;
 
@@ -48,7 +48,7 @@ mst)
     ;;
 
 ga)
-    tester ${algs[2]} $2 $3
+    tester ${algs[2]} $2 $3 $4
     ;;
 
 build)
