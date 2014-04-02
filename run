@@ -30,7 +30,7 @@ tester(){
     printf "(%'dm %'ds %'dms)\n" $min $sec $ms
 }
 
-algs=(nn mst ag) 
+algs=(nn mst ga) 
 
 case $1 in
 "")
@@ -47,7 +47,7 @@ mst)
     tester ${algs[1]}
     ;;
 
-ag)
+ga)
     tester ${algs[2]} $2 $3
     ;;
 

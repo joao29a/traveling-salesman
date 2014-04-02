@@ -92,7 +92,7 @@ void TesterHCP::read_output(){
 
 void TesterHCP::run_test(const char* file){
     read_output();
-    if (test_result() && test_cost())
+    if (test_result())
             cout << "OK cost: " << this->cost << " ";
 }
 void TesterHCP::set_cost(float cost){
