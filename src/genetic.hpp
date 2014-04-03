@@ -2,11 +2,19 @@
 #define GA
 
 #include "graph.hpp"
+#include "heap.hpp"
 #include <vector>
 #include <deque>
 
 template<typename T, typename C>
 using pair_t = pair<vector<T>*, C>;
+
+template<typename T, typename C>
+struct CompareGenetic{
+    bool operator()(pair_t<T,C>* p1, pair_t<T,C>* p2){
+        return p1->second > p2->second;
+    }
+};
 
 template<typename T, typename C>
 using deque_pair = deque<pair_t<T,C>*>;
@@ -58,13 +66,6 @@ deque_pair<T,C>* generate_population(Graph<T,C>* graph, size_t population_size){
 }
 
 template<typename T, typename C>
-struct Compare{
-    bool operator()(pair_t<T,C>* x, pair_t<T,C>* y) const {
-        return x->second < y->second;
-    }
-};
-
-template<typename T, typename C>
 bool is_population_improving(deque_pair<T,C>* population){
     for (int i = 1; i < population->size(); i++){
         if (population->front()->second != population->at(i)->second)
@@ -95,22 +96,23 @@ pair_t<T,C>* crossover(Graph<T,C>* graph, pair_t<T,C>* parent1,
 }
 
 template<typename T, typename C>
-void mutation(pair_t<T,C>* individual, double mutation_rate){
+void mutation(Graph<T,C>* graph, pair_t<T,C>* individual, 
+        double mutation_rate){
     if (((double) rand() / RAND_MAX) < mutation_rate){
         int pos1 = (rand() % (individual->first->size() - 2)) + 1;
         int pos2 = pos1;
         while (pos2 == pos1)
             pos2 = (rand() % (individual->first->size() - 2)) + 1;
         swap<T, vector<T>>(*individual->first, pos1, pos2);
+        individual->second = get_cost(graph, individual->first);
     }
 }
 
 template<typename T, typename C>
 void update_population(deque_pair<T,C>* population, pair_t<T,C>* individual){
-    delete population->front()->first;
-    delete population->front();
-    population->pop_front();
-    population->push_back(individual);
+    delete population->back()->first;
+    delete population->back();
+    population->pop_back();
 }
 
 template<typename T, typename C>
@@ -118,14 +120,16 @@ vector<T>* genetic_tsp(Graph<T,C>* graph, size_t population_size,
         double mutation_rate, size_t max_time){
     srand(time(NULL));
     deque_pair<T,C>* population = generate_population(graph, population_size);
-    sort(population->begin(), population->end(), Compare<T,C>());
+    Heap<pair_t<T,C>*, deque, CompareGenetic<T,C>> heap;
+    heap.build(*population);
     size_t init_time = time(NULL);
     while (is_population_improving(population) && (time(NULL) - init_time) < max_time){
-        pair_t<T,C>* individual = crossover(graph, population->at(0), population->at(1));
-        mutation(individual, mutation_rate);
+        int pos = rand() % (population_size - 1) + 1;
+        pair_t<T,C>* individual = crossover(graph, population->at(0), population->at(pos));
+        mutation(graph, individual, mutation_rate);
         update_population(population, individual);
+        heap.push(*population, individual);
     }
-    sort(population->begin(), population->end(), Compare<T,C>());
     return population->front()->first;
 }
 

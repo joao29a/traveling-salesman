@@ -5,26 +5,12 @@
 #include <unordered_set>
 #include <algorithm>
 #include "graph.hpp"
-
-using namespace std;
+#include "heap.hpp"
 
 template<typename T, typename C>
-struct Heap{
-    struct Compare{
-        bool operator()(const pair<T,C*>& p1, const pair<T,C*>& p2) const {
-            return *p1.second > *p2.second;
-        }
-    };
-
-    static void build(vector<pair<T,C*>>& vt){
-        make_heap(vt.begin(), vt.end(), Compare());
-    }
-    
-    static pair<T,C*> pop(vector<pair<T,C*>>& vt){
-        pair<T,C*> node = vt.front();
-        pop_heap(vt.begin(), vt.end(), Compare());
-        vt.pop_back();
-        return node;
+struct ComparePrim {
+    bool operator()(const pair<T,C*>& p1, const pair<T,C*>& p2){
+        return *p1.second > *p2.second;
     }
 };
 
@@ -39,10 +25,10 @@ vector<T>* mst_prim(Graph<T,C>* graph, Vertex<T,C>* root){
         Q.push_back(pair_vt);
     }
     root->key = 0;
-    Heap<T,C>::build(Q);
+    Heap<pair<T,C*>, vector, ComparePrim<T,C>> heap;
     unordered_set<T> S;
     while (Q.size() != 0){
-        pair<T,C*> node = Heap<T,C>::pop(Q);
+        pair<T,C*> node = heap.pop(Q);
         S.insert(node.first);
         path->push_back(node.first);
         Vertex<T,C>* vertex = graph->get_vertex(node.first);
@@ -54,7 +40,7 @@ vector<T>* mst_prim(Graph<T,C>* graph, Vertex<T,C>* root){
                 adj_vertex->parent = vertex;
             }
         }
-        Heap<T,C>::build(Q);
+        heap.build(Q);
     }
     path->push_back(root->id);
     return path;
