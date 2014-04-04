@@ -131,7 +131,7 @@ vector<T>* genetic_tsp(Graph<T,C>* graph, size_t population_size,
     heap.build(*population);
     size_t init_time = time(NULL);
     size_t iter = 0;
-    C best;
+    C best = numeric_limits<C>::max();
     while (is_population_improving(population, best, ++iter) && 
             (time(NULL) - init_time) < max_time){
         int pos = rand() % (population_size - 1) + 1;
