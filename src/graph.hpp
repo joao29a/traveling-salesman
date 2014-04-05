@@ -111,4 +111,14 @@ C Graph<T,C>::get_cost(T vt1, T vt2){
     return adj_list[vt1]->edges[vt2];
 }
 
+
+template<typename T, typename C>
+C get_total_cost(Graph<T,C>* graph, vector<T>* path){
+    C cost = 0;
+    for (int i = 0; i < path->size() - 1; i++){
+        cost += graph->get_cost(path->at(i), path->at(i + 1));
+    }
+    return cost;
+}
+
 #endif

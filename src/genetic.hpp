@@ -21,15 +21,6 @@ struct CompareGenetic{
 template<typename T, typename C>
 using deque_pair = deque<pair_t<T,C>*>;
 
-template<typename T, typename C>
-C get_cost(Graph<T,C>* graph, vector<T>* path){
-    C cost = 0;
-    for (int i = 0; i < path->size() - 1; i++){
-        cost += graph->get_cost(path->at(i), path->at(i + 1));
-    }
-    return cost;
-}
-
 /* This is faster than the erase function from vector/deque */
 template<typename T, typename D>
 void swap(D& vt, int pos1, int pos2){
@@ -61,7 +52,7 @@ deque_pair<T,C>* generate_population(Graph<T,C>* graph, size_t population_size){
         }
         individual->push_back(*individual->begin());
         pair_t<T,C>* individual_cost = new pair_t<T,C>();
-        *individual_cost = make_pair(individual, get_cost(graph, individual));
+        *individual_cost = make_pair(individual, get_total_cost(graph, individual));
         population->push_back(individual_cost);
     }
     return population;
@@ -98,7 +89,7 @@ pair_t<T,C>* crossover(Graph<T,C>* graph, pair_t<T,C>* parent1,
         }
     }
     path->push_back(path->front());
-    *individual = make_pair(path, get_cost(graph, path));
+    *individual = make_pair(path, get_total_cost(graph, path));
     return individual;
 }
 
@@ -111,7 +102,7 @@ void mutation(Graph<T,C>* graph, pair_t<T,C>* individual,
         while (pos2 == pos1)
             pos2 = (rand() % (individual->first->size() - 2)) + 1;
         swap<T, vector<T>>(*individual->first, pos1, pos2);
-        individual->second = get_cost(graph, individual->first);
+        individual->second = get_total_cost(graph, individual->first);
     }
 }
 

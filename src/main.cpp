@@ -2,6 +2,7 @@
 #include "nearest_neighbor.hpp"
 #include "mst_prim.hpp"
 #include "genetic.hpp"
+#include "brute_force.hpp"
 #include <limits>
 #include <iostream>
 
@@ -18,14 +19,10 @@ unordered_map<string, HEURISTIC> algs = {
 
 template<typename T, typename C>
 void print_path(Graph<T,C>* graph, vector<T>* path){
-    VALUE cost = 0;
-    for (int i = 0; i < (int) (path->size() - 1); i++){
-        cost += graph->get_cost(path->at(i), path->at(i + 1));
-    }
     for (int i = 0; i < path->size(); i++){
         cout << path->at(i) << " ";
     }
-    cout << cost << endl;
+    cout << get_total_cost(graph, path) << endl;
 }
 
 int main(int argc, char** argv){
@@ -33,6 +30,9 @@ int main(int argc, char** argv){
     graph->read_file(argv[2]);
     if (algs.find(string(argv[1])) != algs.end())
         print_path(graph, algs[argv[1]](graph, graph->get_first()));
+    else if (string(argv[1]) == "bf"){
+        print_path(graph, brute_force(graph, graph->get_first()));
+    }
     else{
         stringstream s;
         s << string(argv[3]) << " " << string(argv[4]) << " " << string(argv[5]);

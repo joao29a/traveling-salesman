@@ -8,20 +8,29 @@ compile(){
 
 tester(){
     #compile
-    files=$(find ./testcases -type f | sort)
+    files=$(find ./testcases/$5 -type f | sort -V)
     total=0
     for file in $files; do
-        printf "%-4s %-20s: " $1 $file
-        init=$(date +%s%3N)
-        result=$(./src/prog.out $1 $file $2 $3 $4)
-        let end=$(date +%s%3N)-$init
-        let ms=$end%1000
-        let sec=$end/1000
-        let min=$sec/60
-        let sec=$sec%60
-        let total=$total+$end
-        echo $result | ./tester/tester.out $file
-        printf "(%'dm %'ds %'dms)\n" $min $sec $ms
+        resp="y"
+        if [ "./testcases/bf-cases/11.g" == $file ]; then
+            echo -e "\n---Warning----"
+            echo -e "The next test case needs more than 8gb of memory"
+            echo -e "Do you want to proceed? [y/n]: "
+            read -r resp
+        fi;
+        if [ $resp == "y" ]; then
+            printf "%-4s %-20s: " $1 $file
+            init=$(date +%s%3N)
+            result=$(./src/prog.out $1 $file $2 $3 $4)
+            let end=$(date +%s%3N)-$init
+            let ms=$end%1000
+            let sec=$end/1000
+            let min=$sec/60
+            let sec=$sec%60
+            let total=$total+$end
+            echo $result | ./tester/tester.out $file
+            printf "(%'dm %'ds %'dms)\n" $min $sec $ms
+        fi;
     done
     let ms=$total%1000
     let sec=$total/1000
@@ -50,6 +59,11 @@ mst)
 ga)
     tester ${algs[2]} $2 $3 $4
     ;;
+
+bf)
+    tester "bf" "" "" "" "bf-cases"
+    ;;
+
 
 build)
     compile
