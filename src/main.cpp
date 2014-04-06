@@ -7,14 +7,15 @@
 #include <iostream>
 
 #define KEY int
-#define VALUE float
+#define VALUE int
 
-#define HEURISTIC vector<KEY>*(*)\
+#define ALGORITHMS vector<KEY>*(*)\
     (Graph<KEY, VALUE>*, Vertex<KEY, VALUE>*)
 
-unordered_map<string, HEURISTIC> algs = {
+unordered_map<string, ALGORITHMS> algs = {
     {"nn",  &nearest_neighbor},
-    {"mst", &mst_prim}
+    {"mst", &mst_prim},
+    {"bf",  &brute_force}
 };
 
 template<typename T, typename C>
@@ -30,10 +31,7 @@ int main(int argc, char** argv){
     graph->read_file(argv[2]);
     if (algs.find(string(argv[1])) != algs.end())
         print_path(graph, algs[argv[1]](graph, graph->get_first()));
-    else if (string(argv[1]) == "bf"){
-        print_path(graph, brute_force(graph, graph->get_first()));
-    }
-    else{
+    else {
         stringstream s;
         s << string(argv[3]) << " " << string(argv[4]) << " " << string(argv[5]);
         size_t pop_size, max_time;

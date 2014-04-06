@@ -1,4 +1,4 @@
-CC=clang++
+CC=g++
 CFLAGS=-Wall -std=c++11
 LDFLAGS=-lboost_unit_test_framework
 TESTER_HCP=tester_hcp_test.cpp ../tester/tester_hcp.cpp

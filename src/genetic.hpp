@@ -6,8 +6,6 @@
 #include <vector>
 #include <deque>
 
-#define ITER_FACTOR 10000
-
 template<typename T, typename C>
 using pair_t = pair<vector<T>*, C>;
 
@@ -58,18 +56,14 @@ deque_pair<T,C>* generate_population(Graph<T,C>* graph, size_t population_size){
     return population;
 }
 
+/* only works if C is an int type */
 template<typename T, typename C>
-bool is_population_improving(deque_pair<T,C>* population, C& best, 
-        size_t& iter){
-    if (population->front()->second < best){
-        best = population->front()->second;
-        iter = 0;
-        return true;
+bool is_population_improving(deque_pair<T,C>* population){
+    for (int i = 1; i < population->size(); i++){
+        if (population->at(0)->second != population->at(i)->second)
+            return true;
     }
-    size_t max_iter = population->front()->first->size() - 1;
-    max_iter = (ITER_FACTOR / max_iter) * population->size();
-    if (iter == max_iter) return false;
-    return true;
+    return false;
 }
 
 template<typename T, typename C>
@@ -121,9 +115,7 @@ vector<T>* genetic_tsp(Graph<T,C>* graph, size_t population_size,
     Heap<pair_t<T,C>*, deque, CompareGenetic<T,C>> heap;
     heap.build(*population);
     size_t init_time = time(NULL);
-    size_t iter = 0;
-    C best = numeric_limits<C>::max();
-    while (is_population_improving(population, best, ++iter) && 
+    while (is_population_improving(population) && 
             (time(NULL) - init_time) < max_time){
         int pos = rand() % (population_size - 1) + 1;
         pair_t<T,C>* individual = crossover(graph, population->at(0), 
