@@ -1,0 +1,15 @@
+bf   ./testcases/bf-cases/3.g: OK cost: 17.2111 (0m 0s 4ms)
+bf   ./testcases/bf-cases/4.g: OK cost: 54.1667 (0m 0s 3ms)
+bf   ./testcases/bf-cases/5.g: OK cost: 210.89 (0m 0s 4ms)
+bf   ./testcases/bf-cases/6.g: OK cost: 214.235 (0m 0s 5ms)
+bf   ./testcases/bf-cases/7.g: OK cost: 515.783 (0m 0s 13ms)
+bf   ./testcases/bf-cases/8.g: OK cost: 1357.07 (0m 0s 67ms)
+bf   ./testcases/bf-cases/9.g: OK cost: 278.288 (0m 0s 538ms)
+bf   ./testcases/bf-cases/10.g: OK cost: 2789.82 (0m 5s 122ms)
+
+---Warning----
+The next test cases need more than 8gb of memory
+Do you want to proceed? [y/n]: 
+bf   ./testcases/bf-cases/11.g: OK cost: 1286.69 (1m 0s 136ms)
+bf   ./testcases/bf-cases/12.g: OK cost: 3418.38 (113m 26s 936ms) (~45gb mem.)
+(114m 32s 828ms)
