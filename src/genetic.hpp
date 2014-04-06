@@ -72,7 +72,10 @@ pair_t<T,C>* crossover(Graph<T,C>* graph, pair_t<T,C>* parent1,
     pair_t<T,C>* individual = new pair_t<T,C>();
     unordered_set<T> visited;
     vector<T>* path = new vector<T>();
-    for (int i = 0; i < parent1->first->size() / 2; i++){
+    int part = rand() % 2 + 1;
+    int init = 0;
+    if (part == 1) init = parent1->first->size() / 2;
+    for (int i = init; i < parent1->first->size() / part; i++){
         path->push_back(parent1->first->at(i));
         visited.insert(parent1->first->at(i));
     }
