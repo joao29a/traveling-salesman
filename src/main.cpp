@@ -7,7 +7,7 @@
 #include <iostream>
 
 #define KEY int
-#define VALUE int
+#define VALUE float
 
 #define ALGORITHMS vector<KEY>*(*)\
     (Graph<KEY, VALUE>*, Vertex<KEY, VALUE>*)

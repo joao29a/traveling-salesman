@@ -1,6 +1,7 @@
 #!/bin/bash
 
 total=0
+opt_file=opt_tsp
 
 compile(){
     echo "Compiling..."
@@ -35,11 +36,23 @@ execute(){
     let sec=$sec%60
     let total=$total+$end
     echo $result | ./tester/tester.out $2
-    printf "(%'dm %'ds %'dms)\n" $min $sec $ms
+    filename=$(echo $2 | cut -d '/' -f4 | cut -d '.' -f1)
+    opt_cost=$(get_opt $filename)
+    printf "(%'dm %'ds %'dms) best: %s\n" $min $sec $ms $opt_cost
+}
+
+get_opt(){
+    while read i; do
+        name=$(echo $i | cut -d ' ' -f1)
+        cost=$(echo $i | cut -d ' ' -f3)
+        if [ "$1" == "$name" ]; then
+            echo $cost
+        fi
+    done < $opt_file
 }
 
 tester(){
-    files=$(find ./testcases/all -type f | sort -V)
+    files=$(find ./testcases/tsp -type f | sort -V)
     total=0
     for file in $files; do
         execute $1 $file $2 $3 $4
