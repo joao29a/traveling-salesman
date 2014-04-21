@@ -64,7 +64,7 @@ tester(){
     printf "(%'dm %'ds %'dms)\n" $min $sec $ms
 }
 
-algs=(nn mst ga) 
+algs=(nn mst ga csp) 
 
 case $1 in
 "" | "all")
@@ -83,6 +83,10 @@ mst)
 
 ga)
     tester ${algs[2]} $2 $3 $4
+    ;;
+
+csp)
+    tester ${algs[3]}
     ;;
 
 bf)

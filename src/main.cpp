@@ -3,6 +3,7 @@
 #include "mst_prim.hpp"
 #include "genetic.hpp"
 #include "brute_force.hpp"
+#include "backtracking.hpp"
 #include <limits>
 #include <iostream>
 
@@ -15,7 +16,8 @@
 unordered_map<string, ALGORITHMS> algs = {
     {"nn",  &nearest_neighbor},
     {"mst", &mst_prim},
-    {"bf",  &brute_force}
+    {"bf",  &brute_force},
+    {"csp", &backtracking_search}
 };
 
 template<typename T, typename C>
